@@ -22,7 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		// Give the field an id of “other-title,” and add the placeholder text of "Your Job Role" to the field.
 			// 👆 Done in HTML
 
-	// Adjust the color options when design is chosen
+	// T-Shirt Section	
+		// Hide “Color” drop down menu until a T-Shirt design is selected
+	document.querySelector('#colors').style.display = 'none';
+		// Adjust the color options when design is chosen
 	document.querySelector('#design').addEventListener('change', () => {
 		const theme = $('#design').val();
 		for (i = 0; i < $('#color option').length; i += 1) {
@@ -33,11 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		switch(theme) {
 			case "js puns":
+				document.querySelector('#colors').style.display = '';
 				$('#i-heart-js-options').hide();
 				$('#js-puns-options').show();
 				$('#color').prop('selectedIndex',0);
 				break;
 			case "heart js":
+				document.querySelector('#colors').style.display = '';
 				$('#js-puns-options').hide();
 				$('#i-heart-js-options').show();
 				$('#color').prop('selectedIndex',0);
@@ -46,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				console.log(`Error: Something went wrong when selecting a design (theme = ${theme}) `);
 		}		
 	});
+
 
 	// Auto-select the design, if a color option is chosen first
 	document.querySelector('#color').addEventListener('change', () => {
@@ -152,27 +158,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
-
-
-
-
-		// SCRATCH: todo DELETE THIS
-	// When the group of checkboxes change state, 
-	// document.querySelector('.activities').addEventListener('change', () => {
-		
-
-		// Enable all checkboxes
-		// for (i = 0; i < activitiesCheckboxes.length; i += 1) {
-		// 	activitiesCheckboxes[i].disabled = false;
-		// }
-		// Loop through each
-	// 	for
-
-	// });
-		
-		// Loop through each
-			// If a checked one conflicts with any others, disable the others
 
 });
