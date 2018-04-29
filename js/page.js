@@ -77,83 +77,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			// ⚠️ CREATE array of objects from checkboxes on page
 	
-	const parseActivities = (activitiesHtml) => {
-		const objectifyActivity = (activity, i) => {
-			const activityText = activity.textContent;
-			const thisIndex = i;
-		
-			const parseTitle = (activity) => {
-				const title = activity.substr(0, activity.indexOf('\u2014')).trim();
-				return title;
-			}
-		
-			const parseDateTimes = (activity) => {
-				const startIndex = activity.indexOf('\u2014') + 1;
-				const endIndex = activity.indexOf(',');
-				const dateLength = endIndex - startIndex;
-				const dateTimes = activity.substr(startIndex, dateLength).trim();
-				return dateTimes;
-			}
-		
-			const parsePrice = (activity) => {
-				const priceText = activity.substr(activity.indexOf('$') + 1);
-				const price = parseInt(priceText);
-				return price;
-			}
-		
-			const thisTitle = parseTitle(activityText);
-			const thisDateTimes = parseDateTimes(activityText);
-			const thisPrice = parsePrice(activityText);
 
-			// 👉 Need to extend this model with a `checked` attribute, using https://www.w3schools.com/jsref/prop_checkbox_checked.asp
-			const thisActivity = {
-				index: thisIndex,
-				title: thisTitle,
-				dateTimes: thisDateTimes,
-				price: thisPrice
+
+	const disableConflictingActivities = (activitiesHtml) => {
+		const parseActivities = (activitiesHtml) => {
+			const objectifyActivity = (activity, i) => {
+				const activityText = activity.textContent;
+				const thisIndex = i;
+			
+				const parseTitle = (activity) => {
+					const title = activity.substr(0, activity.indexOf('\u2014')).trim();
+					return title;
+				}
+			
+				const parseDateTimes = (activity) => {
+					const startIndex = activity.indexOf('\u2014') + 1;
+					const endIndex = activity.indexOf(',');
+					const dateLength = endIndex - startIndex;
+					const dateTimes = activity.substr(startIndex, dateLength).trim();
+					return dateTimes;
+				}
+			
+				const parsePrice = (activity) => {
+					const priceText = activity.substr(activity.indexOf('$') + 1);
+					const price = parseInt(priceText);
+					return price;
+				}
+			
+				const thisTitle = parseTitle(activityText);
+				const thisDateTimes = parseDateTimes(activityText);
+				const thisPrice = parsePrice(activityText);
+				const thisChecked = activity.querySelector('input').checked;
+				const thisDisabled = activity.querySelector('input').disabled;
+	
+				const thisActivity = {
+					index: thisIndex,
+					title: thisTitle,
+					dateTimes: thisDateTimes,
+					price: thisPrice,
+					checked: thisChecked,
+					disabled: thisDisabled
+				}
+				return thisActivity; //Returns an object
 			}
-			return thisActivity; //Returns an object
+	
+			const arrayifyActivities = (html) => {
+				let activitiesArray = [];
+				for (let i=0; i < html.length; i++) {
+					const activityObject	= objectifyActivity(html[i], i);
+					activitiesArray.push(activityObject);
+				}
+				return activitiesArray;
+			}
+	
+			const parsedActivities = arrayifyActivities(activitiesHtml);
+			return parsedActivities;
+		}
+		const disableConflicts = (activitiesArray) => {
+			let activities = activitiesArray;
+			for (i = 0; i < activities.length; i++) {
+				switch (activities[i].checked) {
+					case true: 
+						activities[i].disabled = false;
+					case false:
+						for (a = 0; a < activities.length; a++) {
+							if (activites[i].dateTimes = activities[a].dateTimes && activities[a].checked) {
+								activities[i].disabled = true;
+							} else {
+								activities[i].disabled = false;
+							}
+						}
+				}
+			}
+			return activities;
+		}
+		const updateActivitiesHtml = (activitiesArray) => {
+				for (i = 0; i > activitiesArray.length; i++)
+				 	activitiesHtml[i].querySelector('input').disabled = activitiesArray[i].disabled;
+				}
 		}
 
-		const arrayifyActivities = (html) => {
-			let activitiesArray = [];
-			for (let i=0; i < html.length; i++) {
-				const activityObject	= objectifyActivity(html[i], i);
-				activitiesArray.push(activityObject);
-			}
-			return activitiesArray;
-		}
-
-		const parsedActivities = arrayifyActivities(activitiesHtml);
-		return parsedActivities;
-	}
-
-
-	// 🕵️ Just testing the parseActivity() function to make sure it works
-	const testHtml = document.querySelectorAll('.activities > label');
-		console.log(testHtml);
-	
-	const testArray = parseActivities(testHtml);
-		console.log(testArray);
-
-
-	
-
-			// ⚠️ UPDATE array of checkboxes with display state
-	const updateArrayDisplayFlags = () => {
-		// ❓
-	}
-	
-	const updateCheckboxesFromArray = () => {
-		// ❓
+		const updatedActivities = disableConflicts(parseActivities(activitiesHtml));
+		updateActivitiesHtml(updatedActivities);
 	}
 
 		// Total the cost of all events
 
 		// Listen for changes to checkboxes
 		document.querySelector('.activities').addEventListener("change", () => {
-			const checkboxesHtml = document.querySelectorAll('fieldset.activities > input');
-			arrayifyCheckboxs(checkboxesHtml);
+				// 👉 Debug this all the way down
+			disableConflictingActivities(document.querySelectorAll('.activities > label');
 		});
 
 	// # Payment Info section of the form
