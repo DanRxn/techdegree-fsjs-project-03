@@ -75,36 +75,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		// Disable conflicting events
 
-			// CREATE array of objects from checkboxes on page
-	const arrayifyCheckboxs = (checkboxesHtml) => {
-		const parseActivity = (activity, i) => {
+			// ⚠️ CREATE array of objects from checkboxes on page
+	
+	const parseActivities = (activitiesHtml) => {
+		const objectifyActivity = (activity, i) => {
 			const activityText = activity.textContent;
 			const thisIndex = i;
-			const thisTitle = activityText.substr(0, activity.indexOf('—'));
-			const thisDateTime = activityText.substr(activityText.indexOf('–'), activityText.indexOf(','));
-			const thisPriceText = activityText.substr()
-			const thisPrice = parseInt(thisPriceText);
+		
+			const parseTitle = (activity) => {
+				const title = activity.substr(0, activity.indexOf('\u2014')).trim();
+				return title;
+			}
+		
+			const parseDateTimes = (activity) => {
+				const startIndex = activity.indexOf('\u2014') + 1;
+				const endIndex = activity.indexOf(',');
+				const dateLength = endIndex - startIndex;
+				const dateTimes = activity.substr(startIndex, dateLength).trim();
+				return dateTimes;
+			}
+		
+			const parsePrice = (activity) => {
+				const priceText = activity.substr(activity.indexOf('$') + 1);
+				const price = parseInt(priceText);
+				return price;
+			}
+		
+			const thisTitle = parseTitle(activityText);
+			const thisDateTimes = parseDateTimes(activityText);
+			const thisPrice = parsePrice(activityText);
 
+			// 👉 Need to extend this model with a `checked` attribute, using https://www.w3schools.com/jsref/prop_checkbox_checked.asp
 			const thisActivity = {
 				index: thisIndex,
 				title: thisTitle,
 				dateTimes: thisDateTimes,
 				price: thisPrice
 			}
-			return thisActivity;
+			return thisActivity; //Returns an object
 		}
 
+		const arrayifyActivities = (html) => {
+			let activitiesArray = [];
+			for (let i=0; i < html.length; i++) {
+				const activityObject	= objectifyActivity(html[i], i);
+				activitiesArray.push(activityObject);
+			}
+			return activitiesArray;
+		}
 
-		// todo
+		const parsedActivities = arrayifyActivities(activitiesHtml);
+		return parsedActivities;
 	}
-			// UPDATE array of checkboxes with display state
+
+
+	// 🕵️ Just testing the parseActivity() function to make sure it works
+	const testHtml = document.querySelectorAll('.activities > label');
+		console.log(testHtml);
+	
+	const testArray = parseActivities(testHtml);
+		console.log(testArray);
+
+
+	
+
+			// ⚠️ UPDATE array of checkboxes with display state
 	const updateArrayDisplayFlags = () => {
-		// todo
+		// ❓
 	}
-			// 
-		
+	
+	const updateCheckboxesFromArray = () => {
+		// ❓
+	}
+
 		// Total the cost of all events
 
+		// Listen for changes to checkboxes
+		document.querySelector('.activities').addEventListener("change", () => {
+			const checkboxesHtml = document.querySelectorAll('fieldset.activities > input');
+			arrayifyCheckboxs(checkboxesHtml);
+		});
 
 	// # Payment Info section of the form
 
