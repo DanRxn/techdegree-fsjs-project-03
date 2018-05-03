@@ -135,14 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		const disableConflicts = (activitiesArray) => {
 			let activities = activitiesArray;
-			for (i = 0; i < activities.length; i++) {
+			for (let i = 0; i < activities.length; i++) {
 				switch (activities[i].checked) {
 					case true: 
 						activities[i].disabled = false;
+						break;
 					case false:
-						for (a = 0; a < activities.length; a++) {
-							if (activites[i].dateTimes = activities[a].dateTimes && activities[a].checked) {
+						for (let a = 0; a < activities.length; a++) {
+							if (activities[i].dateTimes == activities[a].dateTimes && activities[a].checked) {
 								activities[i].disabled = true;
+								break;
 							} else {
 								activities[i].disabled = false;
 							}
@@ -152,11 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			return activities;
 		}
 		const updateActivitiesHtml = (activitiesArray) => {
-				for (i = 0; i > activitiesArray.length; i++)
-				 	activitiesHtml[i].querySelector('input').disabled = activitiesArray[i].disabled;
-				}
+			for (i = 0; i < activitiesArray.length; i++) {
+				document.querySelectorAll('.activities > label')[i].querySelector('input').disabled = activitiesArray[i].disabled;
+			}
 		}
-
 		const updatedActivities = disableConflicts(parseActivities(activitiesHtml));
 		updateActivitiesHtml(updatedActivities);
 	}
@@ -166,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		// Listen for changes to checkboxes
 		document.querySelector('.activities').addEventListener("change", () => {
 				// 👉 Debug this all the way down
-			disableConflictingActivities(document.querySelectorAll('.activities > label');
+			disableConflictingActivities(document.querySelectorAll('.activities > label'));
 		});
 
 	// # Payment Info section of the form
