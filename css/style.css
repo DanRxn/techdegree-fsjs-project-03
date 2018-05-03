@@ -96,6 +96,11 @@ input:focus {
 	transition: border-color .4s, background-color .4s;
 }
 
+label[disabled="true"]{
+	text-decoration: line-through;
+	color: rgb(80, 80, 80);
+}
+
 input[type="checkbox"],
 input[type="radio"] {
 	display: inline-block;

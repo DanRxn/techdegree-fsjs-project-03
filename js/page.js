@@ -155,7 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		const updateActivitiesHtml = (activitiesArray) => {
 			for (i = 0; i < activitiesArray.length; i++) {
-				document.querySelectorAll('.activities > label')[i].querySelector('input').disabled = activitiesArray[i].disabled;
+				const disabledState = activitiesArray[i].disabled;
+				document.querySelectorAll('.activities > label')[i].querySelector('input').disabled = disabledState;
+				document.querySelectorAll('.activities > label')[i].setAttribute("disabled", disabledState);
 			}
 		}
 		const updatedActivities = disableConflicts(parseActivities(activitiesHtml));
