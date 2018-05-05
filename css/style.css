@@ -132,6 +132,11 @@ button:hover {
 	margin-right: .85em;
 }
 
+.total-block {
+	font-size: 1.2em;
+	color: black;
+}
+
 .interests input {
 	margin-bottom: 0;
 }
