@@ -145,6 +145,36 @@ button:hover {
 	margin-top: 1.25em;
 }
 
+input.valid {
+	outline: 1px solid green;
+}
+
+input.valid:focus {
+	outline: 2px solid green;
+}
+
+input.invalid {
+	outline: 1px solid rgb(255, 132, 0);
+}
+input.invalid:focus {
+	outline: 2px solid rgb(255, 132, 0);
+}
+
+input.invalid [type='checkbox'] {
+	outline: none;
+}
+
+.error-message {
+	font-size: 0.85em;
+  color: rgb(225, 105, 0);
+	margin-top: -15px;
+	margin-bottom: 18px;
+}
+
+.total-block {
+	margin-bottom: 22px;
+}
+
 /* ================================= 
   Helper Classes
 ==================================== */

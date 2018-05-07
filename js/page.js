@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 						break;
 					case false:
 						for (let a = 0; a < activities.length; a++) {
-							if (activities[i].dateTimes == activities[a].dateTimes && activities[a].checked) {
+							if (activities[i].dateTimes === activities[a].dateTimes && activities[a].checked) {
 								activities[i].disabled = true;
 								break;
 							} else {
@@ -197,9 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		// Listen for changes to checkboxes
 		document.querySelector('.activities').addEventListener("change", () => {
 			disableConflictingActivities(document.querySelectorAll('.activities > label'));
-			// ⚠️
 			let totalDiv = document.querySelector('#total-cost');
-			switch (totalDiv != null) {
+			switch (totalDiv !== null) {
 				case true: 
 					updateTotalDiv();
 					break;
@@ -260,7 +259,303 @@ document.addEventListener('DOMContentLoaded', () => {
 		hideOtherPaymentMethods(selectedMethod);
 	});
 
+	// # Form validation
+
+	const getValidityOfName = () => {
+		let thisElement = document.querySelector('#name');
+		let thisValid = false;
+		let thisErrorMessage = "";
+		let thisMessageDivId = "name-error"
+
+		if (/[a-z]/.test(thisElement.value.toLowerCase())) {
+			thisValid = true;
+			thisErrorMessage = "";
+		} else {
+			thisValid = false;
+			thisErrorMessage = "Please enter your name";
+		}
+
+		const thisValidity = {
+			element: thisElement,
+			valid: thisValid,
+			errorMessage: thisErrorMessage,
+			messageDivId: thisMessageDivId
+		}
+		return thisValidity; 
+	}
+
+	
+
+	const getValidityOfEmail = () => {
+		let thisElement = document.querySelector('#mail');
+		let thisValid = false;
+		let thisErrorMessage = "";
+		let thisMessageDivId = "email-error"
+
+		let emailAddressPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+		if (/[a-z]/.test(thisElement.value.toLowerCase()) === false) {
+			thisValid = false;
+			thisErrorMessage = "Please enter your email address";
+		} else if (emailAddressPattern.test(thisElement.value)) {
+			thisValid = true;
+			thisErrorMessage = "";
+		} else {
+			thisValid = false;
+			thisErrorMessage = "Type your full email (e.g. jane@janedoe.org)";
+		}
+
+		const thisValidity = {
+			element: thisElement,
+			valid: thisValid,
+			errorMessage: thisErrorMessage,
+			messageDivId: thisMessageDivId
+		}
+		return thisValidity; 
+	}
+
+	const getValidityofActivities = () => {
+		// Validate at least one checkbox is selected
+
+		let thisElement = document.querySelector('.activities');
+		let thisValid = false;
+		let thisErrorMessage = "Please select at least one activity";
+		let thisMessageDivId = "activities-error"
+		const allActivities = parseActivities(document.querySelectorAll('.activities > label'));
+		
+		for (i = 0; i < allActivities.length; i++) {
+			switch (allActivities[i].checked) {
+				case true: 
+					thisValid = true;
+					thisErrorMessage = "";
+					break;
+				case false:
+					break;
+			}		
+		}
+
+		const thisValidity = {
+			element: thisElement,
+			valid: thisValid,
+			errorMessage: thisErrorMessage,
+			messageDivId: thisMessageDivId
+		}
+		return thisValidity; 
+	}
+
+	const getValidityOfCardNumber = () => {
+
+		let thisElement = document.querySelector('#cc-num');
+		let thisValid = false;
+		let thisErrorMessage = "";
+		let thisMessageDivId = "cc-num-error"
+
+		let ccNumberPattern = /^[0-9]{13,16}$/;
+
+		// Not blank
+		// Numbers only
+		// 13 to 16 digits
+		if (/[0-9]/.test(thisElement.value.toLowerCase()) === false) {
+			thisValid = false;
+			thisErrorMessage = "Please enter your card number";
+		} else if (ccNumberPattern.test(thisElement.value)) {
+			thisValid = true;
+			thisErrorMessage = "";
+		} else {
+			thisValid = false;
+			thisErrorMessage = "Your card number should be between 13–16 digits (no dashes or spaces)";
+		}
+
+		const thisValidity = {
+			element: thisElement,
+			valid: thisValid,
+			errorMessage: thisErrorMessage,
+			messageDivId: thisMessageDivId
+		}
+		return thisValidity; 
+	}
+
+	const getValidityOfZipCode = () => {
+		let thisElement = document.querySelector('#zip');
+		let thisValid = false;
+		let thisErrorMessage = "";
+		let thisMessageDivId = "zip-error"
+
+		let zipPattern = /^[0-9]{5,5}$/;
+
+		// Not blank
+		// Numbers only
+		// 5 digits
+		if (/[0-9]/.test(thisElement.value.toLowerCase()) === false) {
+			thisValid = false;
+			thisErrorMessage = "Please enter your zip code";
+		} else if (zipPattern.test(thisElement.value)) {
+			thisValid = true;
+			thisErrorMessage = "";
+		} else {
+			thisValid = false;
+			thisErrorMessage = "Your zip code should be 5 digits (no letters, dashes, or spaces)";
+		}
+
+		const thisValidity = {
+			element: thisElement,
+			valid: thisValid,
+			errorMessage: thisErrorMessage,
+			messageDivId: thisMessageDivId
+		}
+		return thisValidity; 
+
+	}
+
+	const getValidityOfCvv = () => {
+		let thisElement = document.querySelector('#cvv');
+		let thisValid = false;
+		let thisErrorMessage = "";
+		let thisMessageDivId = "cvv-error"
+
+		let cvvPattern = /^[0-9]{3,3}$/;
+
+		// Not blank
+		// Numbers only
+		// 3 digits
+		if (/[0-9]/.test(thisElement.value.toLowerCase()) === false) {
+			thisValid = false;
+			thisErrorMessage = "Please enter your card's CVV (back of card)";
+		} else if (cvvPattern.test(thisElement.value)) {
+			thisValid = true;
+			thisErrorMessage = "";
+		} else {
+			thisValid = false;
+			thisErrorMessage = "Your card's CVV should be 3 digits (no letters, dashes, or spaces)";
+		}
+
+		const thisValidity = {
+			element: thisElement,
+			valid: thisValid,
+			errorMessage: thisErrorMessage,
+			messageDivId: thisMessageDivId
+		}
+		return thisValidity; 
+	}
 
 
+	const updatePageForValidity = (elementValidity) => {
+		const element = elementValidity.element;
+		const valid = elementValidity.valid;
+		const userMessage = elementValidity.errorMessage;
+		const errorDivId = elementValidity.messageDivId;
+
+		const setClassForValidity = () => {
+			switch (valid) {
+				case true: 
+					element.classList.add('valid');
+					element.classList.remove('invalid');
+					break;
+				case false:
+					element.classList.add('invalid');
+					element.classList.remove('valid');
+			}
+		}
+		const updateErrorMessageForValidity = () => {
+			// e.g. `<div id="name-error" class="error-message"> Please enter your name </div>`
+			
+			const createErrorDiv = () => {
+				let newErrorDiv = document.createElement('div');
+				newErrorDiv.id = errorDivId;
+				newErrorDiv.classList.add('error-message');
+				element.after(newErrorDiv);
+			}
+			const updateErrorDivTextContent = () => {
+				document.querySelector(`#${errorDivId}`).textContent = userMessage;
+			}
+
+			switch (valid) {
+				case true: 
+					if (document.querySelector(`#${errorDivId}`)) {
+						document.querySelector(`#${errorDivId}`).remove();
+					}
+					break;
+				case false:
+					if (document.querySelector(`#${errorDivId}`)) {
+						updateErrorDivTextContent();
+					} else {
+						createErrorDiv();
+						updateErrorDivTextContent();
+					}
+					break;
+			}
+		}
+		setClassForValidity();
+		updateErrorMessageForValidity();
+	}
+
+	
+		// Validate full form
+	const validateForm = () => {
+		const nameValidity = getValidityOfName();
+		const emailValidity = getValidityOfEmail();
+		const activitiesValidity = getValidityofActivities();
+		// Optional (only if Credit Card is selected payment method)
+		let cardNumberValidity = {};
+		let zipCodeValidity = {};
+		let cvvValidity = {};
+		
+		if (document.querySelector('#payment').value === 'credit_card') {
+		cardNumberValidity = getValidityOfCardNumber();
+		zipCodeValidity = getValidityOfZipCode();
+		cvvValidity = getValidityOfCvv();
+		}
+
+		const pageValidity = [nameValidity, emailValidity, activitiesValidity, cardNumberValidity, zipCodeValidity, cvvValidity];
+		let formValid = true;
+
+			// ⚠️ Test if all are valid; if yes, return TRUE; if not, return FALSE
+		
+		for (i = 0; i < pageValidity.length; i++) {
+			updatePageForValidity(pageValidity[i]);
+			const fieldValid = pageValidity[i].valid;
+			switch (fieldValid) {
+				case true: 
+					break;
+				case false: 
+					formValid = false;
+					break;
+			}
+		}
+		return formValid;
+	}
+
+		// Listeners for each field
+
+	document.querySelector('#name').addEventListener("input", () => {
+		updatePageForValidity(getValidityOfName());
+	});
+	document.querySelector('#mail').addEventListener("input", () => {
+		updatePageForValidity(getValidityOfEmail());
+	});
+	document.querySelector('.activities').addEventListener("input", () => {
+		updatePageForValidity(getValidityofActivities());
+	});
+	document.querySelector('#cc-num').addEventListener("input", () => {
+		updatePageForValidity(getValidityOfCardNumber());
+	});
+	document.querySelector('#zip').addEventListener("input", () => {
+		updatePageForValidity(getValidityOfZipCode());
+	});
+	document.querySelector('#cvv').addEventListener("input", () => {
+		updatePageForValidity(getValidityOfCvv());
+	});
+	document.querySelector('#cvv').addEventListener("input", () => {
+		updatePageForValidity(getValidityOfCvv());
+	});
+
+	document.querySelector('form').addEventListener("submit", (e) => {
+		formValid = validateForm();
+		if (formValid !== true) {
+			e.preventDefault();
+		} else {
+			return true;
+		}
+	});
 
 });
