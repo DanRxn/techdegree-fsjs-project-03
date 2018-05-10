@@ -1,8 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-
-
-	const activitiesCheckboxes = document.querySelectorAll('.activities label input');
-
+document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in a function to remove it from global scope
 	// # Set focus on the first text field
 		// Done in index.html, since it's not JS and is desired behavior regardless of JS enablement
 
@@ -20,15 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 		// Give the field an id of “other-title,” and add the placeholder text of "Your Job Role" to the field.
-			// 👆 Done in HTML
+			// Done in HTML
 
 	// T-Shirt Section	
 		// Hide “Color” drop down menu until a T-Shirt design is selected
 	document.querySelector('#colors').style.display = 'none';
 		// Adjust the color options when design is chosen
 	document.querySelector('#design').addEventListener('change', () => {
-		const theme = $('#design').val();
-		for (i = 0; i < $('#color option').length; i += 1) {
+		const theme = document.querySelector('#design').value;
+		for (i = 0; i < document.querySelectorAll('#color option').length; i += 1) {
 			var optValue = document.querySelectorAll('#color option')[i].textContent;
 			optValue = optValue.replace(" (I ♥ JS shirt only)", "");
 			optValue = optValue.replace(" (JS Puns shirt only)", "");
@@ -37,42 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
 		switch(theme) {
 			case "js puns":
 				document.querySelector('#colors').style.display = '';
-				$('#i-heart-js-options').hide();
-				$('#js-puns-options').show();
-				$('#color').prop('selectedIndex',0);
+				document.querySelector('#i-heart-js-options').style.display = 'none';
+				document.querySelector('#js-puns-options').style.display = 'initial';
+				document.querySelector('#color').selectedIndex = '0';
 				break;
 			case "heart js":
 				document.querySelector('#colors').style.display = '';
-				$('#js-puns-options').hide();
-				$('#i-heart-js-options').show();
-				$('#color').prop('selectedIndex',0);
+				document.querySelector('#js-puns-options').style.display = 'none';
+				document.querySelector('#i-heart-js-options').style.display = 'initial';
+				document.querySelector('#color').selectedIndex = '0';
 				break;
 			default:
 				console.log(`Error: Something went wrong when selecting a design (theme = ${theme}) `);
 		}		
 	});
 
-
-	// Auto-select the design, if a color option is chosen first
-	document.querySelector('#color').addEventListener('change', () => {
-		const implicitTheme = $('#color option:selected').parent().attr('id');
-		switch(implicitTheme) {
-			case "js-puns-options":
-				$("#design").val("js puns");
-				break;
-			case "i-heart-js-options":
-				$("#design").val("heart js");
-				break;
-			default:
-				console.log(`Error: Something when wrong when selecting a color (implicitTheme = ${implicitTheme}`);
-		}
-	});
-
-
-
-
 	// # ”Register for Activities” section of the form:
-
 	const parseActivities = (activitiesHtml) => { // returns array of objects, `parsedActivities`
 		const objectifyActivity = (activity, i) => { // returns object, thisActivity
 			const activityText = activity.textContent;
@@ -128,24 +104,22 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 	
 		// Disable conflicting events
-
 			// CREATE array of objects from checkboxes on page
-	
 	const disableConflictingActivities = (activitiesHtml) => {
 		const disableConflicts = (activitiesArray) => {
 			let activities = activitiesArray;
 			for (let i = 0; i < activities.length; i++) {
 				switch (activities[i].checked) {
 					case true: 
-						activities[i].disabled = false;
+						activities[i].style.display = false;
 						break;
 					case false:
 						for (let a = 0; a < activities.length; a++) {
 							if (activities[i].dateTimes === activities[a].dateTimes && activities[a].checked) {
-								activities[i].disabled = true;
+								activities[i].style.display = true;
 								break;
 							} else {
-								activities[i].disabled = false;
+								activities[i].style.display = false;
 							}
 						}
 				}
@@ -155,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const updateActivitiesHtml = (activitiesArray) => {
 			for (i = 0; i < activitiesArray.length; i++) {
 				const disabledState = activitiesArray[i].disabled;
-				document.querySelectorAll('.activities > label')[i].querySelector('input').disabled = disabledState;
+				document.querySelectorAll('.activities > label')[i].querySelector('input').style.display = disabledState;
 				document.querySelectorAll('.activities > label')[i].setAttribute("disabled", disabledState);
 			}
 		}
@@ -164,13 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 		// Total the cost of all events
-
 	const createTotalDiv = () => {
 		const totalBlockHtml = document.createElement('div');
 		totalBlockHtml.innerHTML = `Total: <strong>$<span id="total-cost">0</span></strong>`;
 		totalBlockHtml.className = 'total-block';
 		document.querySelector('.activities').appendChild(totalBlockHtml);
-		// `<div class="total-block">Total: <strong>$<span id="total-cost">0</span></strong></div>`	
+			// Inserts `<div class="total-block">Total: <strong>$<span id="total-cost">0</span></strong></div>`	
 	}
 
 	const updateTotalDiv = () => {
@@ -210,10 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 
 	// # Payment Info section of the form
-
 		// Display payment sections based on the payment option chosen 
 		// in the select menu
-
 	const hideOtherPaymentMethods = (selectedMethod) => {
 		switch(selectedMethod) {
 			case "credit_card":
@@ -242,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		hideOtherPaymentMethods(defaultMethod);
 	}
 
-
 		// The "Credit Card" payment option should be selected by default, 
 		// display the #credit-card div, and hide the "Paypal" and "Bitcoin information.
 	setDefaultPayment();
@@ -260,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 	// # Form validation
-
 	const getValidityOfName = () => {
 		let thisElement = document.querySelector('#name');
 		let thisValid = false;
@@ -281,10 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			errorMessage: thisErrorMessage,
 			messageDivId: thisMessageDivId
 		}
-		return thisValidity; 
+		return thisValidity; // Returns the validity object for Name
 	}
-
-	
 
 	const getValidityOfEmail = () => {
 		let thisElement = document.querySelector('#mail');
@@ -311,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			errorMessage: thisErrorMessage,
 			messageDivId: thisMessageDivId
 		}
-		return thisValidity; 
+		return thisValidity; // Returns the validity object for Email
 	}
 
 	const getValidityofActivities = () => {
@@ -340,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			errorMessage: thisErrorMessage,
 			messageDivId: thisMessageDivId
 		}
-		return thisValidity; 
+		return thisValidity;  // Returns the validity object for Activities
 	}
 
 	const getValidityOfCardNumber = () => {
@@ -372,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			errorMessage: thisErrorMessage,
 			messageDivId: thisMessageDivId
 		}
-		return thisValidity; 
+		return thisValidity;  // Returns the validity object for Card Number
 	}
 
 	const getValidityOfZipCode = () => {
@@ -403,8 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			errorMessage: thisErrorMessage,
 			messageDivId: thisMessageDivId
 		}
-		return thisValidity; 
-
+		return thisValidity;  // Returns the validity object for Zip Code
 	}
 
 	const getValidityOfCvv = () => {
@@ -435,9 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			errorMessage: thisErrorMessage,
 			messageDivId: thisMessageDivId
 		}
-		return thisValidity; 
+		return thisValidity;  // Returns the validity object for CVV
 	}
-
 
 	const updatePageForValidity = (elementValidity) => {
 		const element = elementValidity.element;
@@ -488,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		setClassForValidity();
 		updateErrorMessageForValidity();
 	}
-
 	
 		// Validate full form
 	const validateForm = () => {
@@ -509,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const pageValidity = [nameValidity, emailValidity, activitiesValidity, cardNumberValidity, zipCodeValidity, cvvValidity];
 		let formValid = true;
 
-			// ⚠️ Test if all are valid; if yes, return TRUE; if not, return FALSE
+			// Test if all are valid; if yes, return TRUE; if not, return FALSE
 		
 		for (i = 0; i < pageValidity.length; i++) {
 			updatePageForValidity(pageValidity[i]);
