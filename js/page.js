@@ -1,18 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in a function to remove it from global scope
+	// Declaring variables for relevant DOM elements
+	let form = document.querySelector('form');
+		let nameInput = document.querySelector('#name');
+
+		let emailInput = document.querySelector('#mail');
+		
+		let titleSelect = document.querySelector('#title');
+		let otherTitleTextInput = document.querySelector('#other-title');
+		
+		let colorsDiv = document.querySelector('#colors');
+			let designSelect = document.querySelector('#design');
+			let colorSelect = document.querySelector('#color');
+				let colorOptions = document.querySelectorAll('#color option');
+					let iHeartJsOptions = document.querySelector('#i-heart-js-options');
+					let jsPunsOptions = document.querySelector('#js-puns-options');
+		
+		let activitiesFieldset = document.querySelector('.activities');
+		let activitiesLabels = document.querySelectorAll('.activities > label');
+		
+		let paymentSelect = document.querySelector('#payment');
+			let creditCardOption = document.querySelector('#credit-card');
+			let paypalOption = document.querySelector('#paypal');
+			let bitcoinOption = document.querySelector('#bitcoin');
+		let creditCardNumberInput	= document.querySelector('#cc-num');
+		let zipCodeInput = document.querySelector('#zip');
+		let cvvInput = document.querySelector('#cvv');
+	
+	
+
 	// # Set focus on the first text field
 		// Done in index.html, since it's not JS and is desired behavior regardless of JS enablement
 
 	// # ”Job Role” section of the form:
 		// A text field that will be revealed when the "Other" option is selected from the "Job Role" drop down menu.
-	document.querySelector('#other-title').setAttribute('type', 'hidden');
-	document.querySelector('#title').addEventListener('change', () => {
-		const title = document.querySelector('#title').value;
-		switch(title) {
+	
+	otherTitleTextInput.setAttribute('type', 'hidden');
+	titleSelect.addEventListener('change', () => {
+		switch(titleSelect.value) {
 			case "other":
-				document.querySelector('#other-title').setAttribute('type', 'text');
+				otherTitleTextInput.setAttribute('type', 'text');
 				break;
 			default:
-			document.querySelector('#other-title').setAttribute('type', 'hidden');
+			otherTitleTextInput.setAttribute('type', 'hidden');
 		}
 	});
 		// Give the field an id of “other-title,” and add the placeholder text of "Your Job Role" to the field.
@@ -20,28 +49,30 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 
 	// T-Shirt Section	
 		// Hide “Color” drop down menu until a T-Shirt design is selected
-	document.querySelector('#colors').style.display = 'none';
+	colorsDiv.style.display = 'none';
 		// Adjust the color options when design is chosen
-	document.querySelector('#design').addEventListener('change', () => {
-		const theme = document.querySelector('#design').value;
-		for (i = 0; i < document.querySelectorAll('#color option').length; i += 1) {
-			var optValue = document.querySelectorAll('#color option')[i].textContent;
+	designSelect.addEventListener('change', () => {
+		const theme = designSelect.value;
+
+		for (i = 0; i < colorOptions.length; i += 1) {
+			var optValue = colorOptions[i].textContent;
 			optValue = optValue.replace(" (I ♥ JS shirt only)", "");
 			optValue = optValue.replace(" (JS Puns shirt only)", "");
-			document.querySelectorAll('#color option')[i].textContent = optValue;
+			colorOptions[i].textContent = optValue;
 		}
+
 		switch(theme) {
 			case "js puns":
-				document.querySelector('#colors').style.display = '';
-				document.querySelector('#i-heart-js-options').style.display = 'none';
-				document.querySelector('#js-puns-options').style.display = 'initial';
-				document.querySelector('#color').selectedIndex = '0';
+				colorsDiv.style.display = '';
+				iHeartJsOptions.disabled = true;
+				jsPunsOptions.disabled = false;
+				colorSelect.selectedIndex = '0';
 				break;
 			case "heart js":
-				document.querySelector('#colors').style.display = '';
-				document.querySelector('#js-puns-options').style.display = 'none';
-				document.querySelector('#i-heart-js-options').style.display = 'initial';
-				document.querySelector('#color').selectedIndex = '0';
+				colorsDiv.style.display = '';
+				jsPunsOptions.disabled = true;
+				iHeartJsOptions.disabled = false;
+				colorSelect.selectedIndex = '0';
 				break;
 			default:
 				console.log(`Error: Something went wrong when selecting a design (theme = ${theme}) `);
@@ -104,33 +135,41 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	}
 	
 		// Disable conflicting events
-			// CREATE array of objects from checkboxes on page
 	const disableConflictingActivities = (activitiesHtml) => {
+			// CREATE array of objects from checkboxes on page
 		const disableConflicts = (activitiesArray) => {
 			let activities = activitiesArray;
 			for (let i = 0; i < activities.length; i++) {
 				switch (activities[i].checked) {
 					case true: 
-						activities[i].style.display = false;
+						activities[i].disabled = false;
 						break;
 					case false:
 						for (let a = 0; a < activities.length; a++) {
 							if (activities[i].dateTimes === activities[a].dateTimes && activities[a].checked) {
-								activities[i].style.display = true;
+								activities[i].disabled = true;
 								break;
 							} else {
-								activities[i].style.display = false;
+								activities[i].disabled = false;
 							}
 						}
 				}
 			}
 			return activities;
 		}
+			// Update page HTML for Activities section, with disabled conflicts
 		const updateActivitiesHtml = (activitiesArray) => {
 			for (i = 0; i < activitiesArray.length; i++) {
+				const label = activitiesLabels[i];
+				const input = label.querySelector('input');
 				const disabledState = activitiesArray[i].disabled;
-				document.querySelectorAll('.activities > label')[i].querySelector('input').style.display = disabledState;
-				document.querySelectorAll('.activities > label')[i].setAttribute("disabled", disabledState);
+				if (disabledState) {
+					input.setAttribute('disabled', disabledState);
+					label.setAttribute('disabled', disabledState);
+				} else {
+					input.removeAttribute('disabled');
+					label.removeAttribute('disabled');
+				}
 			}
 		}
 		const updatedActivities = disableConflicts(parseActivities(activitiesHtml));
@@ -138,17 +177,18 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	}
 
 		// Total the cost of all events
+			// Create the Total section of page
 	const createTotalDiv = () => {
 		const totalBlockHtml = document.createElement('div');
 		totalBlockHtml.innerHTML = `Total: <strong>$<span id="total-cost">0</span></strong>`;
 		totalBlockHtml.className = 'total-block';
-		document.querySelector('.activities').appendChild(totalBlockHtml);
+		activitiesFieldset.appendChild(totalBlockHtml);
 			// Inserts `<div class="total-block">Total: <strong>$<span id="total-cost">0</span></strong></div>`	
 	}
-
+			// Update the total on the page, with the calculated total
 	const updateTotalDiv = () => {
 		const calcTotalCost = () => {
-			const allActivities = parseActivities(document.querySelectorAll('.activities > label'));
+			const allActivities = parseActivities(activitiesLabels);
 			let totalCost = 0;
 			for (i = 0; i < allActivities.length; i++) {
 				switch (allActivities[i].checked) {
@@ -162,25 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 			return totalCost;
 		}
 		const displayTotalCost = (totalCost) => {
-			document.querySelector('#total-cost').textContent = totalCost;
+			let totalCostSpan = document.querySelector('#total-cost');
+			totalCostSpan.textContent = totalCost;
 		}
 		displayTotalCost(calcTotalCost());
 	}
-
-		// Listen for changes to checkboxes
-		document.querySelector('.activities').addEventListener("change", () => {
-			disableConflictingActivities(document.querySelectorAll('.activities > label'));
-			let totalDiv = document.querySelector('#total-cost');
-			switch (totalDiv !== null) {
-				case true: 
-					updateTotalDiv();
-					break;
-				case false:
-					createTotalDiv();
-					updateTotalDiv();
-					break;
-			}
-		});
 
 	// # Payment Info section of the form
 		// Display payment sections based on the payment option chosen 
@@ -188,19 +214,19 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	const hideOtherPaymentMethods = (selectedMethod) => {
 		switch(selectedMethod) {
 			case "credit_card":
-				document.querySelector('#credit-card').style.display = '';
-				document.querySelector('#paypal').style.display = 'none';
-				document.querySelector('#bitcoin').style.display = 'none';
+				creditCardOption.style.display = '';
+				paypalOption.style.display = 'none';
+				bitcoinOption.style.display = 'none';
 				break;
 			case "paypal":
-			document.querySelector('#credit-card').style.display = 'none';
-			document.querySelector('#paypal').style.display = '';
-			document.querySelector('#bitcoin').style.display = 'none';
+				creditCardOption.style.display = 'none';
+				paypalOption.style.display = '';
+				bitcoinOption.style.display = 'none';
 				break;
 			case "bitcoin":
-			document.querySelector('#credit-card').style.display = 'none';
-			document.querySelector('#paypal').style.display = 'none';
-			document.querySelector('#bitcoin').style.display = '';
+				creditCardOption.style.display = 'none';
+				paypalOption.style.display = 'none';
+				bitcoinOption.style.display = '';
 				break;
 			default:
 				console.log(`Error: Something went wrong when selecting payment method (selectedMethod = ${selectedMethod}) `);
@@ -209,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 
 	const setDefaultPayment = () => {
 		const defaultMethod = 'credit_card';
-		document.querySelector('#payment').value = defaultMethod;
+		paymentSelect.value = defaultMethod;
 		hideOtherPaymentMethods(defaultMethod);
 	}
 
@@ -224,14 +250,15 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 
 		// When a user selects the "Bitcoin" payment option, the Bitcoin information 
 		// should display, and the credit card and “PayPal” information should be hidden.
-	document.querySelector('#payment').addEventListener("change", () => {
-		const selectedMethod = event.target.value;
+	paymentSelect.addEventListener("change", (e) => {
+		if( !e ) e = window.event;
+		const selectedMethod = e.target.value;
 		hideOtherPaymentMethods(selectedMethod);
 	});
 
 	// # Form validation
 	const getValidityOfName = () => {
-		let thisElement = document.querySelector('#name');
+		let thisElement = nameInput;
 		let thisValid = false;
 		let thisErrorMessage = "";
 		let thisMessageDivId = "name-error"
@@ -254,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	}
 
 	const getValidityOfEmail = () => {
-		let thisElement = document.querySelector('#mail');
+		let thisElement = emailInput;
 		let thisValid = false;
 		let thisErrorMessage = "";
 		let thisMessageDivId = "email-error"
@@ -284,11 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	const getValidityofActivities = () => {
 		// Validate at least one checkbox is selected
 
-		let thisElement = document.querySelector('.activities');
+		let thisElement = activitiesFieldset;
 		let thisValid = false;
 		let thisErrorMessage = "Please select at least one activity";
 		let thisMessageDivId = "activities-error"
-		const allActivities = parseActivities(document.querySelectorAll('.activities > label'));
+		const allActivities = parseActivities(activitiesLabels);
 		
 		for (i = 0; i < allActivities.length; i++) {
 			switch (allActivities[i].checked) {
@@ -312,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 
 	const getValidityOfCardNumber = () => {
 
-		let thisElement = document.querySelector('#cc-num');
+		let thisElement = creditCardNumberInput;
 		let thisValid = false;
 		let thisErrorMessage = "";
 		let thisMessageDivId = "cc-num-error"
@@ -343,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	}
 
 	const getValidityOfZipCode = () => {
-		let thisElement = document.querySelector('#zip');
+		let thisElement = zipCodeInput;
 		let thisValid = false;
 		let thisErrorMessage = "";
 		let thisMessageDivId = "zip-error"
@@ -374,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 	}
 
 	const getValidityOfCvv = () => {
-		let thisElement = document.querySelector('#cvv');
+		let thisElement = cvvInput;
 		let thisValid = false;
 		let thisErrorMessage = "";
 		let thisMessageDivId = "cvv-error"
@@ -423,7 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 		}
 		const updateErrorMessageForValidity = () => {
 			// e.g. `<div id="name-error" class="error-message"> Please enter your name </div>`
-			
+			let preexistingErrorDiv = document.querySelector(`#${errorDivId}`);
+
 			const createErrorDiv = () => {
 				let newErrorDiv = document.createElement('div');
 				newErrorDiv.id = errorDivId;
@@ -431,17 +459,18 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 				element.after(newErrorDiv);
 			}
 			const updateErrorDivTextContent = () => {
-				document.querySelector(`#${errorDivId}`).textContent = userMessage;
+				let errorDivToUpdate = document.querySelector(`#${errorDivId}`);
+				errorDivToUpdate.textContent = userMessage;
 			}
 
 			switch (valid) {
 				case true: 
-					if (document.querySelector(`#${errorDivId}`)) {
-						document.querySelector(`#${errorDivId}`).remove();
+					if (preexistingErrorDiv) {
+						preexistingErrorDiv.remove();
 					}
 					break;
 				case false:
-					if (document.querySelector(`#${errorDivId}`)) {
+					if (preexistingErrorDiv) {
 						updateErrorDivTextContent();
 					} else {
 						createErrorDiv();
@@ -464,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 		let zipCodeValidity = {};
 		let cvvValidity = {};
 		
-		if (document.querySelector('#payment').value === 'credit_card') {
+		if (paymentSelect.value === 'credit_card') {
 		cardNumberValidity = getValidityOfCardNumber();
 		zipCodeValidity = getValidityOfZipCode();
 		cvvValidity = getValidityOfCvv();
@@ -491,29 +520,37 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 
 		// Listeners for each field
 
-	document.querySelector('#name').addEventListener("input", () => {
+	nameInput.addEventListener("input", () => {
 		updatePageForValidity(getValidityOfName());
 	});
-	document.querySelector('#mail').addEventListener("input", () => {
+	emailInput.addEventListener("input", () => {
 		updatePageForValidity(getValidityOfEmail());
 	});
-	document.querySelector('.activities').addEventListener("input", () => {
+	activitiesFieldset.addEventListener("change", () => {
+		let totalDiv = document.querySelector('.total-block');	
+		switch (totalDiv !== null) {
+			case true: 
+				updateTotalDiv();
+				break;
+			case false:
+				createTotalDiv();
+				updateTotalDiv();
+				break;
+		}
+		disableConflictingActivities(activitiesLabels);
 		updatePageForValidity(getValidityofActivities());
 	});
-	document.querySelector('#cc-num').addEventListener("input", () => {
+	creditCardNumberInput.addEventListener("input", () => {
 		updatePageForValidity(getValidityOfCardNumber());
 	});
-	document.querySelector('#zip').addEventListener("input", () => {
+	zipCodeInput.addEventListener("input", () => {
 		updatePageForValidity(getValidityOfZipCode());
 	});
-	document.querySelector('#cvv').addEventListener("input", () => {
-		updatePageForValidity(getValidityOfCvv());
-	});
-	document.querySelector('#cvv').addEventListener("input", () => {
+	cvvInput.addEventListener("input", () => {
 		updatePageForValidity(getValidityOfCvv());
 	});
 
-	document.querySelector('form').addEventListener("submit", (e) => {
+	form.addEventListener("submit", (e) => {
 		formValid = validateForm();
 		if (formValid !== true) {
 			e.preventDefault();
