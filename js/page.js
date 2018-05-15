@@ -25,8 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {  // Wrapping all logic in 
 		let creditCardNumberInput	= document.querySelector('#cc-num');
 		let zipCodeInput = document.querySelector('#zip');
 		let cvvInput = document.querySelector('#cvv');
-	
-	
 
 	// # Set focus on the first text field
 		// Done in index.html, since it's not JS and is desired behavior regardless of JS enablement
